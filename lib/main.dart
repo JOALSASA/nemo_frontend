@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Nemo',
       navigatorKey: navigatorKey,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: PaletaCores.azul),
+        colorScheme: ColorScheme.fromSeed(seedColor: PaletaCores.azul1),
         fontFamily: 'CreateRound',
         useMaterial3: true,
       ),

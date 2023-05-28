@@ -30,14 +30,13 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: _onPressed,
         style: ElevatedButton.styleFrom(
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            side: const BorderSide(color: PaletaCores.azul)),
+          backgroundColor: PaletaCores.azul3,
+        ),
         child: Text(
           _text,
           style: TextStyle(
             color: Colors.white,
-            fontSize: _fontSize ?? 12,
+            fontSize: _fontSize ?? 24,
           ),
         ),
       ),

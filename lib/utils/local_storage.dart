@@ -1,18 +1,18 @@
 import 'dart:convert';
 
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:nemo_frontend/models/usuario.dart';
+import 'package:nemo_frontend/models/usuario_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CredenciaisUsuario {
-  static Usuario? _usuario;
+class LocalStorage {
+  static UsuarioDTO? _usuario;
   static const _usuarioKey = 'usuario_logado';
 
   /// Salva o usuário obtido através do token no SharedPreferences
-  static Future<Usuario> salvarUsuario(String token) async {
+  static Future<UsuarioDTO> salvarUsuario(String token) async {
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
-    _usuario = Usuario(
-      id: decodedToken['id'],
+    _usuario = UsuarioDTO(
+      id: int.tryParse(decodedToken['id']),
       nome: decodedToken['nome'],
       email: decodedToken['email'],
       role: decodedToken['role'],
@@ -24,14 +24,14 @@ class CredenciaisUsuario {
   }
 
   /// Carrega o usuário
-  static Future<Usuario?> carregarUsuario() async {
+  static Future<UsuarioDTO?> carregarUsuario() async {
     var instance = await SharedPreferences.getInstance();
     var usuarioJson = instance.getString(_usuarioKey);
     if (usuarioJson == null) {
       return null;
     }
 
-    _usuario = Usuario.fromJson(jsonDecode(usuarioJson));
+    _usuario = UsuarioDTO.fromJson(jsonDecode(usuarioJson));
     return _usuario;
   }
 

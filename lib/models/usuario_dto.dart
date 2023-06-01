@@ -1,13 +1,13 @@
-class Usuario {
-  String? id;
+class UsuarioDTO {
+  int? id;
   String? nome;
   String? email;
   String? role;
   String? token;
 
-  Usuario({this.id, this.nome, this.email, this.role, this.token});
+  UsuarioDTO({this.id, this.nome, this.email, this.role, this.token});
 
-  Usuario.fromJson(Map<String, dynamic> json) {
+  UsuarioDTO.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     nome = json['nome'];
     email = json['email'];

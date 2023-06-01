@@ -11,12 +11,14 @@ class CustomFormField extends StatelessWidget {
     this.controller,
     this.icon,
     this.height,
+    this.validator,
   }) : super(key: key);
 
   final String? hintText;
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final String? Function(String?)? validator;
   final String? icon;
   final double? height;
 
@@ -26,6 +28,7 @@ class CustomFormField extends StatelessWidget {
       height: height,
       child: TextFormField(
         inputFormatters: inputFormatters,
+        validator: validator,
         controller: controller,
         keyboardType: keyboardType,
         style: const TextStyle(

@@ -36,10 +36,13 @@ class CustomFormField extends StatelessWidget {
         ),
         decoration: InputDecoration(
             suffixIcon: icon != null
-                ? IconButton(
-                    iconSize: 14,
-                    onPressed: null,
-                    icon: Image.asset(icon!),
+                ? Padding(
+                    padding: const EdgeInsets.only(
+                        top: 15, left: 5, right: 0, bottom: 15),
+                    child: SizedBox(
+                      height: 14,
+                      child: Image.asset(icon!),
+                    ),
                   )
                 : null,
             hintText: hintText,

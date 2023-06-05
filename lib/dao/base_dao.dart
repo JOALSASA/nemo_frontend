@@ -78,6 +78,7 @@ abstract class BaseDAO {
     Map<String, String>? headers,
     Object? body,
     Encoding? encoding,
+    bool ignoreUnauthorized = false,
   }) async {
     try {
       headers = _addAuthorizationHeader(headers);
@@ -89,7 +90,7 @@ abstract class BaseDAO {
       _logger.d(
           'POST RESPONSE: status: ${response.statusCode} url: ${url.toString()}, headers: ${headers.toString()}, body: ${response.body}');
 
-      if (response.statusCode == 401) {
+      if (!ignoreUnauthorized && response.statusCode == 401) {
         await LocalStorage.clearStorage();
         navigatorKey.currentState!.pushReplacementNamed('/boas-vindas');
       }

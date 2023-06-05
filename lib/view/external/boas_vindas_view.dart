@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
+import 'package:nemo_frontend/components/buttons/primary_button.dart';
+import 'package:nemo_frontend/components/inputs/custom_form_field.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/usuario_dao.dart';
-import 'package:nemo_frontend/view/external/login_card.dart';
-import 'package:nemo_frontend/view/external/registro_card.dart';
+import 'package:nemo_frontend/models/login_form.dart';
+import 'package:nemo_frontend/models/novo_usuario_form.dart';
+import 'package:nemo_frontend/models/usuario_dto.dart';
+import 'package:nemo_frontend/utils/local_storage.dart';
+import 'package:nemo_frontend/view/internal/home_view.dart';
 
 class BoasVindasView extends StatefulWidget {
   const BoasVindasView({Key? key}) : super(key: key);
@@ -14,12 +19,19 @@ class BoasVindasView extends StatefulWidget {
 
 class _BoasVindasViewState extends State<BoasVindasView> {
   final UsuarioDAO _usuarioDAO = UsuarioDAO();
+  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _form = GlobalKey<FormState>();
 
   //TODO: Corrigir font da appbar -> Aplicar font Aleta
   //TODO: remover(reduzir) o uso de valores fixos e avaliar questão de resposividade para mobile
   //TODO: Carregar as informações do usuário logado
 
   Widget? _bodyCard;
+
+  //TODO: desabilitar botão de registro
+  bool _disableActionBtn = false;
 
   @override
   void initState() {
@@ -63,7 +75,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
                     text: 'Entrar',
                     onPressed: () {
                       setState(() {
-                        _bodyCard = const LoginCard();
+                        _bodyCard = _buildLoginCard();
                       });
                     }),
                 const SizedBox(width: 37),
@@ -71,7 +83,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
                     text: 'Registrar',
                     onPressed: () {
                       setState(() {
-                        _bodyCard = const RegistroCard();
+                        _bodyCard = _buildRegistroCard();
                       });
                     }),
               ],
@@ -85,11 +97,12 @@ class _BoasVindasViewState extends State<BoasVindasView> {
             margin: EdgeInsets.only(
                 left: MediaQuery.sizeOf(context).width * 0.29375),
             decoration: BoxDecoration(
-                image: DecorationImage(
-              image:
-                  Image.asset('assets/images/fish_background_image.png').image,
-              fit: BoxFit.fill,
-            )),
+              image: DecorationImage(
+                image: Image.asset('assets/images/fish_background_image.png')
+                    .image,
+                fit: BoxFit.fill,
+              ),
+            ),
           ),
           Align(
             alignment: Alignment.centerLeft,
@@ -131,6 +144,223 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
             )
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginCard() {
+    return Container(
+      margin: EdgeInsets.only(
+        left: MediaQuery.sizeOf(context).width * 0.1576,
+      ),
+      constraints: const BoxConstraints(maxHeight: 615, maxWidth: 390),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        color: PaletaCores.azul1,
+      ),
+      child: Form(
+        key: _form,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 30),
+              const Text(
+                'Entrar',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 36, color: Colors.white),
+              ),
+              const SizedBox(height: 40),
+              CustomFormField(
+                height: 49,
+                controller: _emailController,
+                validator: _emailValidator,
+                hintText: 'Email',
+                keyboardType: TextInputType.emailAddress,
+                icon: 'assets/icons/arroba_icon.png',
+              ),
+              const SizedBox(height: 20),
+              CustomFormField(
+                height: 49,
+                controller: _passwordController,
+                validator: _passwordValidator,
+                hintText: 'Password',
+                keyboardType: TextInputType.text,
+                icon: 'assets/icons/senha_icon.png',
+              ),
+              const SizedBox(height: 25),
+              PrimaryButton(
+                onPressed: () => autenticar(),
+                width: 153,
+                height: 45,
+                text: 'Entrar',
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Ainda não possui uma conta?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+              const SizedBox(height: 10),
+              PrimaryButton(
+                onPressed: () => setState(() {
+                  _bodyCard = _buildRegistroCard();
+                }),
+                width: 124,
+                height: 35,
+                text: 'Registrar',
+                fontSize: 18,
+              ),
+              const SizedBox(height: 15),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void autenticar() async {
+    if (!_form.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      String token = await _usuarioDAO.autenticarUsuario(
+          loginForm: LoginForm(
+        email: _emailController.text,
+        senha: _passwordController.text,
+      ));
+
+      UsuarioDTO usuario = await LocalStorage.salvarUsuario(token);
+
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeView(usuario: usuario),
+          ),
+        );
+      } else {
+        //TODO: Mensagem de falha na autenticação
+        LocalStorage.clearStorage();
+      }
+    } catch (e) {
+      //TODO: Dialogo para mostrar os erros
+      print(e.toString());
+    }
+  }
+
+  // TODO: Validar o email do usuário
+  String? _emailValidator(String? email) {
+    if (email == null || email.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    return null;
+  }
+
+  String? _usernameValidator(String? username) {
+    if (username == null || username.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    return null;
+  }
+
+  // TODO: Escolher os padrões para avaliar a senha
+  String? _passwordValidator(String? senha) {
+    if (senha == null || senha.isEmpty) {
+      return 'Campo obrigatório';
+    }
+    return null;
+  }
+
+  Widget _buildRegistroCard() {
+    return Container(
+      margin: EdgeInsets.only(
+        left: MediaQuery.sizeOf(context).width * 0.1576,
+      ),
+      constraints: const BoxConstraints(maxHeight: 615, maxWidth: 390),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        color: PaletaCores.azul1,
+      ),
+      child: Form(
+        key: _form,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 30),
+              const Text(
+                'Registrar',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 36, color: Colors.white),
+              ),
+              const SizedBox(height: 40),
+              CustomFormField(
+                height: 49,
+                controller: _usernameController,
+                hintText: 'Username',
+                validator: _usernameValidator,
+                keyboardType: TextInputType.text,
+                icon: 'assets/icons/user_icon.png',
+              ),
+              const SizedBox(height: 20),
+              CustomFormField(
+                height: 49,
+                controller: _emailController,
+                hintText: 'Email',
+                validator: _emailValidator,
+                keyboardType: TextInputType.emailAddress,
+                icon: 'assets/icons/arroba_icon.png',
+              ),
+              const SizedBox(height: 20),
+              CustomFormField(
+                height: 49,
+                controller: _passwordController,
+                hintText: 'Password',
+                validator: _passwordValidator,
+                keyboardType: TextInputType.text,
+                icon: 'assets/icons/senha_icon.png',
+              ),
+              const SizedBox(height: 25),
+              PrimaryButton(
+                onPressed: () {
+                  _usuarioDAO.registrarNovoUsuario(
+                    novoUsuarioForm: NovoUsuarioForm(
+                      nomeUsuario: _usernameController.text,
+                      email: _emailController.text,
+                      senha: _passwordController.text,
+                    ),
+                  );
+                },
+                width: 153,
+                height: 45,
+                text: 'Registrar',
+              ),
+              const SizedBox(height: 30),
+              const Text(
+                'Já possui uma conta?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, color: Colors.white),
+              ),
+              const SizedBox(height: 10),
+              PrimaryButton(
+                onPressed: () => setState(() {
+                  _bodyCard = _buildLoginCard();
+                }),
+                width: 124,
+                height: 35,
+                fontSize: 18,
+                text: 'Entrar',
+              ),
+              const SizedBox(height: 15),
+            ],
+          ),
         ),
       ),
     );

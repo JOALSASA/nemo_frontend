@@ -19,10 +19,12 @@ class UsuarioDAO extends BaseDAO {
   Future<String> autenticarUsuario({required LoginForm loginForm}) async {
     var url = getCompleteUrl(path: '$_basePath/autenticar');
     try {
-      var response =
-          await post(url, body: jsonEncode(loginForm.toJson()), headers: {
-        'Content-type': 'application/json',
-      });
+      var response = await post(url,
+          body: jsonEncode(loginForm.toJson()),
+          headers: {
+            'Content-type': 'application/json',
+          },
+          ignoreUnauthorized: true);
       var bodyBytes = response.bodyBytes;
       var decode = utf8.decode(bodyBytes);
 

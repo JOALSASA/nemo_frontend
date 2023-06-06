@@ -30,7 +30,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
 
   Widget? _bodyCard;
 
-  //TODO: desabilitar botão de registro
+  //TODO: desabilitar botão de registro e login após o primeiro click e habilitar novamente quando a operação estiver terminado
   bool _disableActionBtn = false;
 
   @override
@@ -175,7 +175,6 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 40),
               CustomFormField(
-                height: 49,
                 controller: _emailController,
                 validator: _emailValidator,
                 hintText: 'Email',
@@ -184,10 +183,10 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 20),
               CustomFormField(
-                height: 49,
                 controller: _passwordController,
                 validator: _passwordValidator,
                 hintText: 'Password',
+                isPasswordField: true,
                 keyboardType: TextInputType.text,
                 icon: 'assets/icons/senha_icon.png',
               ),
@@ -302,7 +301,6 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 40),
               CustomFormField(
-                height: 49,
                 controller: _usernameController,
                 hintText: 'Username',
                 validator: _usernameValidator,
@@ -311,7 +309,6 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 20),
               CustomFormField(
-                height: 49,
                 controller: _emailController,
                 hintText: 'Email',
                 validator: _emailValidator,
@@ -320,9 +317,9 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 20),
               CustomFormField(
-                height: 49,
                 controller: _passwordController,
                 hintText: 'Password',
+                isPasswordField: true,
                 validator: _passwordValidator,
                 keyboardType: TextInputType.text,
                 icon: 'assets/icons/senha_icon.png',

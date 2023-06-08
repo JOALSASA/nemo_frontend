@@ -8,6 +8,7 @@ class PrimaryButton extends StatelessWidget {
     required String text,
     bool? disable,
     double? fontSize,
+    Color? backgroundColor,
     double? width,
     double? height,
   })  : _height = height,
@@ -16,6 +17,7 @@ class PrimaryButton extends StatelessWidget {
         _text = text,
         _fontSize = fontSize,
         _onPressed = onPressed,
+        _backgroundColor = backgroundColor,
         super(key: key);
 
   final void Function()? _onPressed;
@@ -24,6 +26,7 @@ class PrimaryButton extends StatelessWidget {
   final double? _fontSize;
   final double? _width;
   final double? _height;
+  final Color? _backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: _disable ? null : _onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: PaletaCores.azul3,
+          backgroundColor: _backgroundColor ?? PaletaCores.azul3,
         ),
         child: Text(
           _text,

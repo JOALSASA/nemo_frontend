@@ -4,6 +4,7 @@ import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/custom/aquario_item.dart';
 import 'package:nemo_frontend/components/inputs/search_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
+import 'package:nemo_frontend/dao/aquario_dao.dart';
 import 'package:nemo_frontend/models/aquario_dto.dart';
 import 'package:nemo_frontend/models/usuario_dto.dart';
 
@@ -18,11 +19,19 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
 
+  AquarioDAO aquarioDAO = AquarioDAO();
+
   List<AquarioDTO> listaAquarios = [
     AquarioDTO(id: 1, nome: 'Aquário 1', altura: 1, comprimento: 2, largura: 3),
     AquarioDTO(id: 2, nome: 'Aquário 2', altura: 2, comprimento: 2, largura: 2),
     AquarioDTO(id: 3, nome: 'Aquário 3', altura: 1, comprimento: 4, largura: 1),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    aquarioDAO.listarAquariosUsuario();
+  }
 
   @override
   Widget build(BuildContext context) {

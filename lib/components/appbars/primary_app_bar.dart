@@ -21,7 +21,9 @@ class PrimaryAppBar extends AppBar {
           actions: [
             AppBarTextButton(
                 text: 'Meus aquários', onPressed: () => meusAquarios),
+            const SizedBox(width: 37),
             AppBarTextButton(text: 'Alertas', onPressed: () => alertas),
+            const SizedBox(width: 37),
             AppBarTextButton(text: 'Conta', onPressed: () => conta),
           ],
         );

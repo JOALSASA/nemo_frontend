@@ -37,7 +37,7 @@ abstract class BaseDAO {
       _logger.d(
           'GET REQUEST: url: ${url.toString()}, headers: ${headers.toString()}');
       var response = await http.get(url, headers: headers);
-      log('GET RESPONSE: status: ${response.statusCode} url: ${url.toString()}, body: ${headers.toString()}, body: ${response.body}');
+      _logger.d('GET RESPONSE: status: ${response.statusCode} url: ${url.toString()}, body: ${headers.toString()}, body: ${response.body}');
 
       if (response.statusCode == 401) {
         await LocalStorage.clearStorage();

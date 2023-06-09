@@ -5,9 +5,6 @@ import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 class PrimaryAppBar extends AppBar {
   PrimaryAppBar({
     super.key,
-    required void Function()? meusAquarios,
-    required void Function()? alertas,
-    required void Function()? conta,
   }) : super(
           backgroundColor: PaletaCores.azul1,
           toolbarHeight: 100,
@@ -20,11 +17,19 @@ class PrimaryAppBar extends AppBar {
           ),
           actions: [
             AppBarTextButton(
-                text: 'Meus aquários', onPressed: () => meusAquarios),
+              text: 'Meus aquários',
+              onPressed: () => print('Tela de Alertas'),
+            ),
             const SizedBox(width: 37),
-            AppBarTextButton(text: 'Alertas', onPressed: () => alertas),
+            AppBarTextButton(
+              text: 'Alertas',
+              onPressed: () => print('Tela de Alertas'),
+            ),
             const SizedBox(width: 37),
-            AppBarTextButton(text: 'Conta', onPressed: () => conta),
+            AppBarTextButton(
+              text: 'Conta',
+              onPressed: () => print('Tela de Alertas'),
+            ),
           ],
         );
 }

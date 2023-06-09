@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:logger/logger.dart';
 import 'package:nemo_frontend/models/usuario_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +20,7 @@ class LocalStorage {
       token: token,
     );
     var instance = await SharedPreferences.getInstance();
-    instance.setString(_usuarioKey, _usuario!.toJson().toString());
+    instance.setString(_usuarioKey, jsonEncode(_usuario!.toJson()));
     return _usuario!;
   }
 

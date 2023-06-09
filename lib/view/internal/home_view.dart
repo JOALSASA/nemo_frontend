@@ -39,12 +39,12 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    double screenHeight = size.height;
+    double screenWidth = size.width;
+
     return Scaffold(
-      appBar: PrimaryAppBar(
-        meusAquarios: _navegarTelaMeusAquarios,
-        alertas: _navegarTelaAlertas,
-        conta: _navegarTelaConta,
-      ),
+      appBar: PrimaryAppBar(),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
@@ -61,16 +61,7 @@ class _HomeViewState extends State<HomeView> {
                   ),
                   const SizedBox(width: 15),
                   PrimaryButton(
-                    onPressed: () {
-                      if (controller.text.isEmpty) {
-                        return;
-                      }
-
-                      setState(() {
-                        _listaAquarios =
-                            _aquarioDAO.listarAquariosUsuario(controller.text);
-                      });
-                    },
+                    onPressed: buscarAquario,
                     backgroundColor: PaletaCores.azul2,
                     text: 'Buscar',
                     fontSize: 16,
@@ -88,10 +79,20 @@ class _HomeViewState extends State<HomeView> {
                 future: _listaAquarios,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  List<AquarioDTO> listaAquarios = snapshot.data!;
+
+                  if (listaAquarios.isEmpty) {
+                    return Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: screenHeight * 0.5),
+                        child: const Text(
+                            'Não encontramos nenhum aquário, tente cadastrar um novo selecionando a opção de adicionar aquário'),
+                      ),
+                    );
                   }
 
-                  List<AquarioDTO> listaAquarios = snapshot.data!;
                   return GridView.builder(
                     padding: EdgeInsets.zero,
                     shrinkWrap: true,
@@ -117,15 +118,13 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  void _navegarTelaAlertas() {
-    print('Tela de Alertas');
-  }
+  void buscarAquario() {
+    if (controller.text.isEmpty) {
+      return;
+    }
 
-  void _navegarTelaMeusAquarios() {
-    print('Tela de Alerts');
-  }
-
-  void _navegarTelaConta() {
-    print('Tela de Alertas');
+    setState(() {
+      _listaAquarios = _aquarioDAO.listarAquariosUsuario(controller.text);
+    });
   }
 }

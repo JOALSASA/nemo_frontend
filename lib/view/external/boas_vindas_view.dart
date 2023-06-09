@@ -24,7 +24,6 @@ class _BoasVindasViewState extends State<BoasVindasView> {
   final _passwordController = TextEditingController();
   final _form = GlobalKey<FormState>();
 
-  //TODO: Corrigir font da appbar -> Aplicar font Aleta
   //TODO: remover(reduzir) o uso de valores fixos e avaliar questão de resposividade para mobile
   //TODO: Carregar as informações do usuário logado
 
@@ -37,6 +36,22 @@ class _BoasVindasViewState extends State<BoasVindasView> {
   void initState() {
     super.initState();
     _bodyCard = _buildBoasVindasCard();
+    verificarUsuarioAutenticado();
+  }
+
+  void verificarUsuarioAutenticado() async {
+    UsuarioDTO? usuarioDTO = await LocalStorage.carregarUsuario();
+    if (usuarioDTO == null) {
+      return;
+    }
+
+    if (context.mounted) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => HomeView(usuario: usuarioDTO),
+        ),
+      );
+    }
   }
 
   @override

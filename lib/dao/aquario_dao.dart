@@ -15,8 +15,15 @@ class AquarioDAO extends BaseDAO {
 
   AquarioDAO._internal();
 
-  Future<List<AquarioDTO>> listarAquariosUsuario() async {
-    var url = getCompleteUrl(path: '$_basePath/listar');
+  Future<List<AquarioDTO>> listarAquariosUsuario([String? nomeAquario]) async {
+    var url = getCompleteUrl(
+        path: '$_basePath/listar',
+        queryParameters: nomeAquario != null
+            ? {
+                'nomeAquario': nomeAquario,
+              }
+            : null);
+
     try {
       var response = await get(url);
       var bodyBytes = response.bodyBytes;

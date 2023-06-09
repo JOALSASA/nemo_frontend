@@ -18,19 +18,23 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  final AquarioDAO _aquarioDAO = AquarioDAO();
+  final TextEditingController controller = TextEditingController();
 
-  AquarioDAO aquarioDAO = AquarioDAO();
-
-  List<AquarioDTO> listaAquarios = [
-    AquarioDTO(id: 1, nome: 'Aquário 1', altura: 1, comprimento: 2, largura: 3),
-    AquarioDTO(id: 2, nome: 'Aquário 2', altura: 2, comprimento: 2, largura: 2),
-    AquarioDTO(id: 3, nome: 'Aquário 3', altura: 1, comprimento: 4, largura: 1),
-  ];
+  Future<List<AquarioDTO>>? _listaAquarios;
 
   @override
   void initState() {
     super.initState();
-    aquarioDAO.listarAquariosUsuario();
+    _listaAquarios = _aquarioDAO.listarAquariosUsuario();
+
+    controller.addListener(() {
+      if (controller.text.isEmpty) {
+        setState(() {
+          _listaAquarios = _aquarioDAO.listarAquariosUsuario();
+        });
+      }
+    });
   }
 
   @override
@@ -53,11 +57,20 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
-                    child: const CustomSearchBar(),
+                    child: CustomSearchBar(controller: controller),
                   ),
                   const SizedBox(width: 15),
                   PrimaryButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (controller.text.isEmpty) {
+                        return;
+                      }
+
+                      setState(() {
+                        _listaAquarios =
+                            _aquarioDAO.listarAquariosUsuario(controller.text);
+                      });
+                    },
                     backgroundColor: PaletaCores.azul2,
                     text: 'Buscar',
                     fontSize: 16,
@@ -71,17 +84,31 @@ class _HomeViewState extends State<HomeView> {
                 text: 'Adicionar aquário',
                 fontSize: 16,
               ),
-              GridView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Número de colunas desejado
-                  crossAxisSpacing: 10, // Espaçamento horizontal entre os itens
-                  mainAxisSpacing: 10, // Espaçamento vertical entre os itens
-                  childAspectRatio: 16 / 9
-                ),
-                itemCount: listaAquarios.length,
-                itemBuilder: (context, index) => Align(child: AquarioItem(listaAquarios[index])),
+              FutureBuilder<List<AquarioDTO>>(
+                future: _listaAquarios,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+
+                  List<AquarioDTO> listaAquarios = snapshot.data!;
+                  return GridView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            // Número de colunas desejado
+                            crossAxisSpacing: 10,
+                            // Espaçamento horizontal entre os itens
+                            mainAxisSpacing: 10,
+                            // Espaçamento vertical entre os itens
+                            childAspectRatio: 16 / 9),
+                    itemCount: listaAquarios.length,
+                    itemBuilder: (context, index) =>
+                        Align(child: AquarioItem(listaAquarios[index])),
+                  );
+                },
               ),
             ],
           ),

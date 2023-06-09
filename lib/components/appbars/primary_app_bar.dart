@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
+import 'package:nemo_frontend/view/internal/alertas/alertas_view.dart';
+import 'package:nemo_frontend/view/internal/conta/conta_view.dart';
+import 'package:nemo_frontend/view/internal/home_view.dart';
 
 class PrimaryAppBar extends AppBar {
   PrimaryAppBar({
     super.key,
+    required BuildContext context,
+    bool telaMeusAquarios = false,
+    bool telaAlertas = false,
+    bool telaConta = false,
   }) : super(
           backgroundColor: PaletaCores.azul1,
           toolbarHeight: 100,
@@ -17,19 +24,51 @@ class PrimaryAppBar extends AppBar {
           ),
           actions: [
             AppBarTextButton(
-              text: 'Meus aquários',
-              onPressed: () => print('Tela de Alertas'),
-            ),
+                text: 'Meus aquários',
+                decoration: telaMeusAquarios ? TextDecoration.underline : null,
+                onPressed: () {
+                  if (telaMeusAquarios) {
+                    return;
+                  }
+                  Navigator.of(context).pushReplacement(PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        const HomeView(),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ));
+                }),
             const SizedBox(width: 37),
             AppBarTextButton(
-              text: 'Alertas',
-              onPressed: () => print('Tela de Alertas'),
-            ),
+                text: 'Alertas',
+                decoration: telaAlertas ? TextDecoration.underline : null,
+                onPressed: () {
+                  if (telaAlertas) {
+                    return;
+                  }
+
+                  Navigator.of(context).pushReplacement(PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        const AlertasView(),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ));
+                }),
             const SizedBox(width: 37),
             AppBarTextButton(
-              text: 'Conta',
-              onPressed: () => print('Tela de Alertas'),
-            ),
+                text: 'Conta',
+                decoration: telaConta ? TextDecoration.underline : null,
+                onPressed: () {
+                  if (telaConta) {
+                    return;
+                  }
+
+                  Navigator.of(context).pushReplacement(PageRouteBuilder(
+                    pageBuilder: (context, animation1, animation2) =>
+                        const ContaView(),
+                    transitionDuration: Duration.zero,
+                    reverseTransitionDuration: Duration.zero,
+                  ));
+                }),
           ],
         );
 }

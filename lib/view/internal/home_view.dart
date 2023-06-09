@@ -6,12 +6,9 @@ import 'package:nemo_frontend/components/inputs/search_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
 import 'package:nemo_frontend/models/aquario_dto.dart';
-import 'package:nemo_frontend/models/usuario_dto.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({Key? key, required this.usuario}) : super(key: key);
-
-  final UsuarioDTO usuario;
+  const HomeView({Key? key}) : super(key: key);
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -19,7 +16,7 @@ class HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<HomeView> {
   final AquarioDAO _aquarioDAO = AquarioDAO();
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController searchBarController = TextEditingController();
 
   Future<List<AquarioDTO>>? _listaAquarios;
 
@@ -28,8 +25,8 @@ class _HomeViewState extends State<HomeView> {
     super.initState();
     _listaAquarios = _aquarioDAO.listarAquariosUsuario();
 
-    controller.addListener(() {
-      if (controller.text.isEmpty) {
+    searchBarController.addListener(() {
+      if (searchBarController.text.isEmpty) {
         setState(() {
           _listaAquarios = _aquarioDAO.listarAquariosUsuario();
         });
@@ -44,7 +41,7 @@ class _HomeViewState extends State<HomeView> {
     double screenWidth = size.width;
 
     return Scaffold(
-      appBar: PrimaryAppBar(),
+      appBar: PrimaryAppBar(telaMeusAquarios: true, context: context,),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
@@ -57,7 +54,7 @@ class _HomeViewState extends State<HomeView> {
                 children: [
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 500),
-                    child: CustomSearchBar(controller: controller),
+                    child: CustomSearchBar(controller: searchBarController),
                   ),
                   const SizedBox(width: 15),
                   PrimaryButton(
@@ -119,12 +116,13 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void buscarAquario() {
-    if (controller.text.isEmpty) {
+    if (searchBarController.text.isEmpty) {
       return;
     }
 
     setState(() {
-      _listaAquarios = _aquarioDAO.listarAquariosUsuario(controller.text);
+      _listaAquarios =
+          _aquarioDAO.listarAquariosUsuario(searchBarController.text);
     });
   }
 }

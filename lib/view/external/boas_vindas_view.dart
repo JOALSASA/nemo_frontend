@@ -51,7 +51,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
     if (context.mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (context) => HomeView(usuario: usuarioDTO),
+          builder: (context) => const HomeView(),
         ),
       );
     }
@@ -257,7 +257,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeView(usuario: usuario),
+            builder: (context) => const HomeView(),
           ),
         );
       } else {

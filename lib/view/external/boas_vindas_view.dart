@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/inputs/custom_form_field.dart';
+import 'package:nemo_frontend/components/snackbar/custom_snack_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
+import 'package:nemo_frontend/components/utils/snack_bar_utils.dart';
 import 'package:nemo_frontend/dao/usuario_dao.dart';
+import 'package:nemo_frontend/models/api_erro_dto.dart';
 import 'package:nemo_frontend/models/login_form.dart';
 import 'package:nemo_frontend/models/novo_usuario_form.dart';
 import 'package:nemo_frontend/models/usuario_dto.dart';
@@ -261,9 +264,11 @@ class _BoasVindasViewState extends State<BoasVindasView> {
         //TODO: Mensagem de falha na autenticação
         LocalStorage.clearStorage();
       }
+    } on ApiErroDTO catch (e) {
+      SnackBarUtils.showCustomSnackBar(context, e.mensagem ?? '');
     } catch (e) {
-      //TODO: Dialogo para mostrar os erros
-      print(e.toString());
+      SnackBarUtils.showCustomSnackBar(context,
+          'Ops, Houve um erro interno ao tentar realizar a autenticação.');
     }
   }
 

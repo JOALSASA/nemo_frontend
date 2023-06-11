@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
-import 'package:nemo_frontend/models/aquario_dto.dart';
+import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 
 class AquarioItem extends StatelessWidget {
   const AquarioItem(this.aquario, {Key? key}) : super(key: key);

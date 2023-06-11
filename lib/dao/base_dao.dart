@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -21,7 +20,7 @@ abstract class BaseDAO {
     return Uri.http(_apiDomain, path, queryParameters);
   }
 
-  Map<String, String>? _addAuthorizationHeader(Map<String, String>? headers) {
+  Map<String, String> _addAuthorizationHeader(Map<String, String>? headers) {
     if (headers == null) {
       return {'Authorization': LocalStorage.getToken()};
     }
@@ -37,7 +36,8 @@ abstract class BaseDAO {
       _logger.d(
           'GET REQUEST: url: ${url.toString()}, headers: ${headers.toString()}');
       var response = await http.get(url, headers: headers);
-      _logger.d('GET RESPONSE: status: ${response.statusCode} url: ${url.toString()}, body: ${headers.toString()}, body: ${response.body}');
+      _logger.d(
+          'GET RESPONSE: status: ${response.statusCode} url: ${url.toString()}, body: ${headers.toString()}, body: ${response.body}');
 
       if (response.statusCode == 401) {
         await LocalStorage.clearStorage();
@@ -82,6 +82,10 @@ abstract class BaseDAO {
   }) async {
     try {
       headers = _addAuthorizationHeader(headers);
+
+      if (body != null) {
+        headers.putIfAbsent('Content-type', () => 'application/json');
+      }
 
       _logger.d(
           'POST REQUEST: url: ${url.toString()}, headers: ${headers.toString()}, body: $body');

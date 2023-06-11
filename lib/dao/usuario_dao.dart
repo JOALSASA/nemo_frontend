@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:nemo_frontend/dao/base_dao.dart';
 import 'package:nemo_frontend/models/api_erro_dto.dart';
-import 'package:nemo_frontend/models/login_form.dart';
-import 'package:nemo_frontend/models/novo_usuario_form.dart';
-import 'package:nemo_frontend/models/usuario_dto.dart';
+import 'package:nemo_frontend/models/usuario/login_form.dart';
+import 'package:nemo_frontend/models/usuario/novo_usuario_form.dart';
+import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
 
 class UsuarioDAO extends BaseDAO {
   // Implementação do singleton com construtores factorys do dart

@@ -2,7 +2,8 @@ import 'dart:convert';
 
 import 'package:nemo_frontend/dao/base_dao.dart';
 import 'package:nemo_frontend/models/api_erro_dto.dart';
-import 'package:nemo_frontend/models/aquario_dto.dart';
+import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/models/aquario/novo_aquario_form.dart';
 
 class AquarioDAO extends BaseDAO {
   // Implementação do singleton com construtores factorys do dart
@@ -24,20 +25,30 @@ class AquarioDAO extends BaseDAO {
               }
             : null);
 
-    try {
-      var response = await get(url);
-      var bodyBytes = response.bodyBytes;
-      var decode = utf8.decode(bodyBytes);
+    var response = await get(url);
+    var bodyBytes = response.bodyBytes;
+    var decode = utf8.decode(bodyBytes);
 
-      if (response.statusCode == 200) {
-        return List<AquarioDTO>.from(jsonDecode(decode).map(
-          (x) => AquarioDTO.fromJson(x),
-        ));
-      }
-
-      return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
-    } catch (e) {
-      rethrow;
+    if (response.statusCode == 200) {
+      return List<AquarioDTO>.from(jsonDecode(decode).map(
+        (x) => AquarioDTO.fromJson(x),
+      ));
     }
+
+    return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
+  }
+
+  Future<AquarioDTO> cadastrarAquario(NovoAquarioForm novoAquarioForm) async {
+    var url = getCompleteUrl(path: _basePath);
+
+    var response = await post(url, body: jsonEncode(novoAquarioForm.toJson()));
+    var bodyBytes = response.bodyBytes;
+    var decode = utf8.decode(bodyBytes);
+
+    if (response.statusCode == 201) {
+      return AquarioDTO.fromJson(jsonDecode(decode));
+    }
+
+    return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
   }
 }

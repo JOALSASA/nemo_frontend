@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:logger/logger.dart';
-import 'package:nemo_frontend/models/usuario_dto.dart';
+import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LocalStorage {

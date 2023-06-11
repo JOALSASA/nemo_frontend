@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/inputs/custom_form_field.dart';
-import 'package:nemo_frontend/components/snackbar/custom_snack_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/components/utils/snack_bar_utils.dart';
 import 'package:nemo_frontend/dao/usuario_dao.dart';
 import 'package:nemo_frontend/models/api_erro_dto.dart';
-import 'package:nemo_frontend/models/login_form.dart';
-import 'package:nemo_frontend/models/novo_usuario_form.dart';
-import 'package:nemo_frontend/models/usuario_dto.dart';
+import 'package:nemo_frontend/models/usuario/login_form.dart';
+import 'package:nemo_frontend/models/usuario/novo_usuario_form.dart';
+import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
 import 'package:nemo_frontend/utils/local_storage.dart';
 import 'package:nemo_frontend/view/internal/home_view.dart';
 

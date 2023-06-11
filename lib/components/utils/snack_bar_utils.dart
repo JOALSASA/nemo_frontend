@@ -14,4 +14,14 @@ class SnackBarUtils {
     );
   }
 
+  static void showApiInternalErrorSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        content: CustomSnackBar(message: 'Opss! parece que estamos com um problema interno em nossos servidores, tente novamente mais tarde.'),
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
 }

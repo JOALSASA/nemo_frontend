@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/custom/aquario_item.dart';
+import 'package:nemo_frontend/components/dialogs/cadastro_aquario_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/success_dialog.dart';
 import 'package:nemo_frontend/components/inputs/search_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
-import 'package:nemo_frontend/models/aquario_dto.dart';
+import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -41,7 +43,10 @@ class _HomeViewState extends State<HomeView> {
     double screenWidth = size.width;
 
     return Scaffold(
-      appBar: PrimaryAppBar(telaMeusAquarios: true, context: context,),
+      appBar: PrimaryAppBar(
+        telaMeusAquarios: true,
+        context: context,
+      ),
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
@@ -67,7 +72,7 @@ class _HomeViewState extends State<HomeView> {
               ),
               const SizedBox(height: 45),
               PrimaryButton(
-                onPressed: () {},
+                onPressed: () => adicionarNovoAquario(),
                 backgroundColor: PaletaCores.azul2,
                 text: 'Adicionar aquário',
                 fontSize: 16,
@@ -124,5 +129,25 @@ class _HomeViewState extends State<HomeView> {
       _listaAquarios =
           _aquarioDAO.listarAquariosUsuario(searchBarController.text);
     });
+  }
+
+  void adicionarNovoAquario() async {
+    var result = await showDialog(
+      context: context,
+      barrierColor: Colors.transparent,
+      builder: (context) => const CadastroAquarioDialog(),
+    );
+
+    if (result != null && (result as bool) && context.mounted) {
+      await showDialog(
+        context: context,
+        builder: (context) => const SuccessDialog(
+            message:
+                'Parabéns pelo novo cadastro do seu aquário no nosso sistema de gerenciamento de aquários online!'),
+      );
+      setState(() {
+        _listaAquarios = _aquarioDAO.listarAquariosUsuario();
+      });
+    }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
+import 'package:nemo_frontend/components/dialogs/fail_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/loading_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/success_dialog.dart';
 import 'package:nemo_frontend/components/inputs/custom_form_field.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
-import 'package:nemo_frontend/components/utils/snack_bar_utils.dart';
 import 'package:nemo_frontend/dao/usuario_dao.dart';
 import 'package:nemo_frontend/models/api_erro_dto.dart';
 import 'package:nemo_frontend/models/usuario/login_form.dart';
@@ -79,30 +81,21 @@ class _BoasVindasViewState extends State<BoasVindasView> {
             child: Row(
               children: [
                 AppBarTextButton(
-                    text: 'Home',
-                    onPressed: () {
-                      setState(() {
-                        _bodyCard = _buildBoasVindasCard();
-                      });
-                    }),
+                  text: 'Home',
+                  onPressed: () => _navegarBoasVindas(),
+                ),
                 const SizedBox(width: 37),
                 AppBarTextButton(text: 'Sobre', onPressed: () {}),
                 const SizedBox(width: 37),
                 AppBarTextButton(
-                    text: 'Entrar',
-                    onPressed: () {
-                      setState(() {
-                        _bodyCard = _buildLoginCard();
-                      });
-                    }),
+                  text: 'Entrar',
+                  onPressed: () => _navegarLogin(),
+                ),
                 const SizedBox(width: 37),
                 AppBarTextButton(
-                    text: 'Registrar',
-                    onPressed: () {
-                      setState(() {
-                        _bodyCard = _buildRegistroCard();
-                      });
-                    }),
+                  text: 'Registrar',
+                  onPressed: () => _navegarRegistro(),
+                ),
               ],
             ),
           )
@@ -222,9 +215,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 10),
               PrimaryButton(
-                onPressed: () => setState(() {
-                  _bodyCard = _buildRegistroCard();
-                }),
+                onPressed: () => _navegarRegistro(),
                 width: 124,
                 height: 35,
                 text: 'Registrar',
@@ -244,15 +235,18 @@ class _BoasVindasViewState extends State<BoasVindasView> {
     }
 
     try {
+      LoadingDialog.loadingDialog(context);
       String token = await _usuarioDAO.autenticarUsuario(
           loginForm: LoginForm(
         email: _emailController.text,
         senha: _passwordController.text,
       ));
+      _passwordController.clear();
 
-      UsuarioDTO usuario = await LocalStorage.salvarUsuario(token);
+      await LocalStorage.salvarUsuario(token);
 
       if (context.mounted) {
+        Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -260,14 +254,23 @@ class _BoasVindasViewState extends State<BoasVindasView> {
           ),
         );
       } else {
-        //TODO: Mensagem de falha na autenticação
+        Navigator.pop(context);
         LocalStorage.clearStorage();
       }
     } on ApiErroDTO catch (e) {
-      SnackBarUtils.showCustomSnackBar(context, e.mensagem ?? '');
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => FailDialog(message: e.mensagem ?? ''),
+      );
     } catch (e) {
-      SnackBarUtils.showCustomSnackBar(context,
-          'Ops, Houve um erro interno ao tentar realizar a autenticação.');
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => const FailDialog(
+            message:
+                'Ops, Houve um erro interno ao tentar realizar a autenticação.'),
+      );
     }
   }
 
@@ -345,15 +348,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 25),
               PrimaryButton(
-                onPressed: () {
-                  _usuarioDAO.registrarNovoUsuario(
-                    novoUsuarioForm: NovoUsuarioForm(
-                      nomeUsuario: _usernameController.text,
-                      email: _emailController.text,
-                      senha: _passwordController.text,
-                    ),
-                  );
-                },
+                onPressed: () => _registrarNovoUsuario(),
                 width: 153,
                 height: 45,
                 text: 'Registrar',
@@ -366,9 +361,7 @@ class _BoasVindasViewState extends State<BoasVindasView> {
               ),
               const SizedBox(height: 10),
               PrimaryButton(
-                onPressed: () => setState(() {
-                  _bodyCard = _buildLoginCard();
-                }),
+                onPressed: () => _navegarLogin(),
                 width: 124,
                 height: 35,
                 fontSize: 18,
@@ -380,5 +373,54 @@ class _BoasVindasViewState extends State<BoasVindasView> {
         ),
       ),
     );
+  }
+
+  void _registrarNovoUsuario() async {
+    try {
+      LoadingDialog.loadingDialog(context);
+      await _usuarioDAO.registrarNovoUsuario(
+        novoUsuarioForm: NovoUsuarioForm(
+          nomeUsuario: _usernameController.text,
+          email: _emailController.text,
+          senha: _passwordController.text,
+        ),
+      );
+      _passwordController.clear();
+
+      if (context.mounted) {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) => const SuccessDialog(
+              message: 'Novo cadastro realizado com sucesso.'),
+        );
+        _navegarLogin();
+      }
+    } on ApiErroDTO catch (e) {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        builder: (context) => FailDialog(
+            message: e.mensagem ?? 'Falha por conta de um erro interno'),
+      );
+    }
+  }
+
+  void _navegarBoasVindas() {
+    setState(() {
+      _bodyCard = _buildBoasVindasCard();
+    });
+  }
+
+  void _navegarRegistro() {
+    setState(() {
+      _bodyCard = _buildRegistroCard();
+    });
+  }
+
+  void _navegarLogin() {
+    setState(() {
+      _bodyCard = _buildLoginCard();
+    });
   }
 }

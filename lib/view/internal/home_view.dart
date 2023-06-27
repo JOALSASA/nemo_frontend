@@ -8,6 +8,7 @@ import 'package:nemo_frontend/components/inputs/search_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/view/internal/aquarios/aquario_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({Key? key}) : super(key: key);
@@ -108,8 +109,19 @@ class _HomeViewState extends State<HomeView> {
                             // Espaçamento vertical entre os itens
                             childAspectRatio: 16 / 9),
                     itemCount: listaAquarios.length,
-                    itemBuilder: (context, index) =>
-                        Align(child: AquarioItem(listaAquarios[index])),
+                    itemBuilder: (context, index) => Align(
+                      child: AquarioItem(
+                        listaAquarios[index],
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  AquarioView(aquarioDTO: listaAquarios[index]),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   );
                 },
               ),

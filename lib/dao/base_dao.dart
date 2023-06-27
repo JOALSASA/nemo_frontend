@@ -11,13 +11,13 @@ import 'package:nemo_frontend/utils/local_storage.dart';
 
 abstract class BaseDAO {
   // TODO: Tratar o carregamento de diferentes ambientes
-  final String _apiDomain = 'project-nemo-api.somee.com';
+  final String _apiDomain = '192.168.0.111:8080';
   final _logger = Logger();
 
   @protected
   Uri getCompleteUrl(
       {required String path, Map<String, dynamic>? queryParameters}) {
-    return Uri.https(_apiDomain, path, queryParameters);
+    return Uri.http(_apiDomain, path, queryParameters);
   }
 
   Map<String, String> _addAuthorizationHeader(Map<String, String>? headers) {

@@ -15,6 +15,7 @@ class PrimaryAppBar extends AppBar {
   }) : super(
           backgroundColor: PaletaCores.azul1,
           toolbarHeight: 100,
+          automaticallyImplyLeading: false,
           title: Container(
             margin: const EdgeInsets.only(left: 85),
             child: const Text(

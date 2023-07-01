@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/app_bar_text_button.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
-import 'package:nemo_frontend/view/internal/alertas/alertas_view.dart';
+import 'package:nemo_frontend/view/internal/alertas/meus_alertas_view.dart';
 import 'package:nemo_frontend/view/internal/conta/conta_view.dart';
 import 'package:nemo_frontend/view/internal/home_view.dart';
 
@@ -48,7 +48,7 @@ class PrimaryAppBar extends AppBar {
 
                   Navigator.of(context).pushReplacement(PageRouteBuilder(
                     pageBuilder: (context, animation1, animation2) =>
-                        const AlertasView(),
+                        const MeusAlertasView(),
                     transitionDuration: Duration.zero,
                     reverseTransitionDuration: Duration.zero,
                   ));

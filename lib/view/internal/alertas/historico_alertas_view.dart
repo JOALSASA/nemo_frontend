@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
+import 'package:nemo_frontend/view/internal/alertas/meus_alertas_view.dart';
 
 import '../../../components/buttons/primary_button.dart';
 
@@ -196,14 +197,27 @@ class _HistoricoAlertasViewState extends State<HistoricoAlertasView> {
   switchPaginas() {
     return Row(
       children: [
-        ElevatedButton(onPressed: () {}, child: const Text("Meus Alertas")),
+        ElevatedButton(onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const MeusAlertasView(),
+            ),
+          );
+        }, child: const Text("Meus Alertas")),
         Container(
           height: 58,
           width: 2,
           color: PaletaCores.azul2,
           margin: const EdgeInsets.symmetric(horizontal: 9.5),
         ),
-        ElevatedButton(onPressed: () {}, child: const Text("Histórico")),
+        ElevatedButton(onPressed: () {},
+            child: const Text("Histórico"),
+          style: ElevatedButton.styleFrom(
+              elevation: 10,
+              shadowColor: PaletaCores.cinza1
+          ),
+        ),
       ],
     );
   }

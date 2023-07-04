@@ -53,9 +53,20 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                   funcoesPaginasAlerta()
                 ],
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 50),
+                child: PrimaryButton(
+                  onPressed: () {
+                    showDialogAddAlerta();
+                  },
+                  backgroundColor: PaletaCores.azul2,
+                  text: 'Adicionar Alerta',
+                  fontSize: 16,
+                ),
+              ),
               GridView.builder(
                   padding:
-                      const EdgeInsets.only(left: 176, right: 173, top: 88),
+                      const EdgeInsets.only(left: 176, right: 173),
                   scrollDirection: Axis.vertical,
                   shrinkWrap: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -188,7 +199,13 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
   switchPaginas() {
     return Row(
       children: [
-        ElevatedButton(onPressed: () {}, child: const Text("Meus Alertas")),
+        ElevatedButton(onPressed: () {},
+          child: const Text("Meus Alertas"),
+          style: ElevatedButton.styleFrom(
+            elevation: 10,
+            shadowColor: PaletaCores.cinza1
+          ),
+        ),
         Container(
           height: 58,
           width: 2,
@@ -197,7 +214,6 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
         ),
         ElevatedButton(
             onPressed: () {
-              print("oi");
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -382,5 +398,84 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
         ],
       );
     }
+  }
+
+  showDialogAddAlerta(){
+    return showDialog(
+        context: context,
+        builder: (_) => Dialog(
+          elevation: 50,
+          shadowColor:
+          const Color(0xff13426A),
+          surfaceTintColor:
+          const Color(0xffE7E7E7),
+          child: Container(
+            height: 271,
+            width: 575,
+            padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 26),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  alignment: Alignment.center,
+                  child: const Text("Adicionar Alerta",
+                    style: TextStyle(
+                      fontSize: 24
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 250,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: "Digite o nome do alerta"
+                    ),
+                  ),
+                ),
+                const Row(
+                  children: [
+                    SizedBox(
+                      width: 250,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            hintText: "Digite o parâmetro"
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 25,),
+                    SizedBox(
+                      width: 50,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            hintText: "min"
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 25,),
+                    SizedBox(
+                      width: 50,
+                      child: TextField(
+                        decoration: InputDecoration(
+                            hintText: "max"
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child: PrimaryButton(
+                    onPressed: () {},
+                    backgroundColor: PaletaCores.azul2,
+                    text: 'Adicionar',
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
   }
 }

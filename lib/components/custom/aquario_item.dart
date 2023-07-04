@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/view/internal/aquarios/configuracoes_aquario_view.dart';
 
 class AquarioItem extends StatelessWidget {
   const AquarioItem(this.aquario, {Key? key, this.onTap}) : super(key: key);
@@ -14,7 +15,8 @@ class AquarioItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-            color: PaletaCores.branco1, borderRadius: BorderRadius.circular(15)),
+            color: PaletaCores.branco1,
+            borderRadius: BorderRadius.circular(15)),
         constraints: const BoxConstraints(maxHeight: 290, maxWidth: 590),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 25),
@@ -36,7 +38,9 @@ class AquarioItem extends StatelessWidget {
                         'Conectado',
                         style: TextStyle(color: PaletaCores.verde1),
                       ),
-                      const SizedBox(width: 11,),
+                      const SizedBox(
+                        width: 11,
+                      ),
                       Container(
                         height: 15,
                         width: 15,
@@ -85,7 +89,12 @@ class AquarioItem extends StatelessWidget {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () {},
+                  onPressed: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ConfiguracoesAquarioView(aquarioDTO: aquario),
+                    ),
+                  ),
                   child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [Text('Configurações'), Icon(Icons.settings)],

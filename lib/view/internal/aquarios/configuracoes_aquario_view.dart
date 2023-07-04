@@ -3,16 +3,18 @@ import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/custom/aquario_item.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 
-class AquarioView extends StatefulWidget {
-  const AquarioView({Key? key, required this.aquarioDTO}) : super(key: key);
+class ConfiguracoesAquarioView extends StatefulWidget {
+  const ConfiguracoesAquarioView({Key? key, required this.aquarioDTO})
+      : super(key: key);
 
   final AquarioDTO aquarioDTO;
 
   @override
-  State<AquarioView> createState() => _AquarioViewState();
+  State<ConfiguracoesAquarioView> createState() =>
+      _ConfiguracoesAquarioViewState();
 }
 
-class _AquarioViewState extends State<AquarioView> {
+class _ConfiguracoesAquarioViewState extends State<ConfiguracoesAquarioView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,6 @@ class _AquarioViewState extends State<AquarioView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 30),
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -36,23 +37,6 @@ class _AquarioViewState extends State<AquarioView> {
                   ),
                 ),
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: SizedBox(child: AquarioItem(widget.aquarioDTO)),
-              ),
-              const SizedBox(height: 50),
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Gráficos',
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 30),
-              // TODO: adicionar os gráficos do aquário com a biblioteca syncfusion
             ],
           ),
         ),

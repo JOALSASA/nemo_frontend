@@ -30,4 +30,19 @@ class AquarioParametroDAO extends BaseDAO {
 
     return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
   }
+
+  Future excluirParametro(
+      {required int idAquario, required int idAquarioParametro}) async {
+    var url = getCompleteUrl(
+        path: '$_basePath/$idAquario/parametro/$idAquarioParametro');
+    var response = await delete(url);
+    var bodyBytes = response.bodyBytes;
+    var decode = utf8.decode(bodyBytes);
+
+    if (response.statusCode == 204) {
+      return;
+    }
+
+    return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
+  }
 }

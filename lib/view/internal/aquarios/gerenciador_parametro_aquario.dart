@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
 import 'package:nemo_frontend/components/custom/sombra_default.dart';
+import 'package:nemo_frontend/components/dialogs/question_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/success_dialog.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
@@ -145,7 +147,30 @@ class _GerenciadorParametroAquarioState
             IconButton(
               constraints: const BoxConstraints(),
               padding: EdgeInsets.zero,
-              onPressed: () {},
+              onPressed: () {
+                showDialog<bool>(
+                  context: context,
+                  builder: (context) => const QuestionDialog(
+                      message:
+                          'Tem certeza que deseja deletar esse parâmetro?'),
+                ).then((value) async {
+                  if (value == null || !value) {
+                    return;
+                  }
+                  await aquarioParametroDAO.excluirParametro(
+                      idAquario: aquarioParametroDTO.aquariosId ?? 0,
+                      idAquarioParametro: aquarioParametroDTO.id ?? 0);
+                  if (context.mounted) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const SuccessDialog(
+                          message: 'Parâmetro deletado com sucesso.'),
+                    );
+                    setState(() {
+                    });
+                  }
+                });
+              },
               icon: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(

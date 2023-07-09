@@ -130,4 +130,48 @@ abstract class BaseDAO {
           mensagem: 'Erro durante a leitura dos dados trazidos do servidor'));
     }
   }
+
+  @protected
+  Future<Response> delete(Uri url, {Map<String, String>? headers}) async {
+    try {
+      headers = _addAuthorizationHeader(headers);
+
+      _logger.d(
+          'DELETE REQUEST: url: ${url.toString()}, headers: ${headers.toString()}');
+      var response = await http.delete(url, headers: headers);
+      _logger.d(
+          'DELETE RESPONSE: status: ${response.statusCode} url: ${url.toString()}, body: ${headers.toString()}, body: ${response.body}');
+
+      if (response.statusCode == 401) {
+        await LocalStorage.clearStorage();
+        navigatorKey.currentState!.pushReplacementNamed('/boas-vindas');
+      }
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        return response;
+      }
+      var bodyBytes = response.bodyBytes;
+      var decode = utf8.decode(bodyBytes);
+      var decodedBody = jsonDecode(decode);
+
+      return Future.error(ApiErroDTO.fromJson(decodedBody));
+    } on ClientException catch (e) {
+      _logger.d('ClientException: ${e.message}');
+      return Future.error(ApiErroDTO(mensagem: e.message));
+    } on SocketException catch (e) {
+      _logger.d('SocketException: ${e.message}');
+      return Future.error(
+        ApiErroDTO(mensagem: 'Não foi possível se conectar com o servidor'),
+      );
+    } on FormatException catch (e) {
+      _logger.d('FormatException -> source: ${e.source} Message: ${e.message}');
+      return Future.error(ApiErroDTO(
+          mensagem: 'Erro durante a leitura dos dados trazidos do servidor'));
+    } on HandshakeException catch (e) {
+      _logger.d(
+          'HandshakeException -> osError: ${e.osError} Message: ${e.message}');
+      return Future.error(ApiErroDTO(
+          mensagem: 'Erro durante a leitura dos dados trazidos do servidor'));
+    }
+  }
 }

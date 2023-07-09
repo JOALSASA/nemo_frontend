@@ -417,13 +417,19 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  alignment: Alignment.center,
-                  child: const Text("Adicionar Alerta",
-                    style: TextStyle(
-                      fontSize: 24
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.center,
+                      child: const Text("Adicionar Alerta",
+                        style: TextStyle(
+                          fontSize: 24
+                        ),
+                      ),
                     ),
-                  ),
+                    dropdownAquario(aquarios)
+                  ],
                 ),
                 const SizedBox(
                   width: 250,
@@ -466,7 +472,13 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                 Container(
                   alignment: Alignment.bottomRight,
                   child: PrimaryButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      /*
+                      * TODO
+                      *  adicionar alerta
+                      * */
+                      Navigator.pop(context);
+                    },
                     backgroundColor: PaletaCores.azul2,
                     text: 'Adicionar',
                     fontSize: 16,

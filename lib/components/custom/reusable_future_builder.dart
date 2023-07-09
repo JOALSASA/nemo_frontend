@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nemo_frontend/models/api_erro_dto.dart';
 
 class ReusableFutureBuilder<T> extends StatelessWidget {
   const ReusableFutureBuilder({
@@ -22,10 +23,24 @@ class ReusableFutureBuilder<T> extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return loadingWidget ?? const CircularProgressIndicator();
         } else if (snapshot.hasError) {
+          if (snapshot.error is ApiErroDTO) {
+            var obj = snapshot.error as ApiErroDTO;
+            return Text(
+              '${obj.mensagem}',
+              style: const TextStyle(fontSize: 16),
+            );
+          }
+
           return errorWidget ?? Text('Error: ${snapshot.error}');
-        } else {
-          return builder(context, snapshot);
         }
+        if (snapshot.data!.isEmpty) {
+          return const Text(
+            'Não encontramos nenhum item',
+            style: TextStyle(fontSize: 16),
+          );
+        }
+
+        return builder(context, snapshot);
       },
     );
   }

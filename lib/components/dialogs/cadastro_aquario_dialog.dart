@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/inputs/custom_form_field.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';

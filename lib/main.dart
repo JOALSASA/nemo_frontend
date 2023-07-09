@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'CreateRound',
         useMaterial3: true,
       ),
-      home: const /*BoasVindasView()*/ MeusAlertasView(),
+      home: const BoasVindasView(),
       routes: {'/boas-vindas': (context) => const BoasVindasView()},
       debugShowCheckedModeBanner: false,
     );

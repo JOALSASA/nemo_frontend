@@ -25,10 +25,12 @@ class GerenciadorParametroAquario extends StatefulWidget {
 class _GerenciadorParametroAquarioState
     extends State<GerenciadorParametroAquario> {
   final AquarioParametroDAO aquarioParametroDAO = AquarioParametroDAO();
+  Future<List<AquarioParametroDTO>>? futureList;
 
   @override
   void initState() {
     super.initState();
+    futureList = fetchParametrosAquario();
   }
 
   Future<List<AquarioParametroDTO>> fetchParametrosAquario() {
@@ -111,7 +113,7 @@ class _GerenciadorParametroAquarioState
             ],
           ),
           ReusableFutureBuilder<AquarioParametroDTO>(
-            future: fetchParametrosAquario(),
+            future: futureList!,
             builder: (context, snapshot) {
               return ListView.builder(
                 shrinkWrap: true,
@@ -171,7 +173,9 @@ class _GerenciadorParametroAquarioState
                       builder: (context) => const SuccessDialog(
                           message: 'Parâmetro deletado com sucesso.'),
                     );
-                    setState(() {});
+                    setState(() {
+                      futureList = fetchParametrosAquario();
+                    });
                   }
                 });
               },
@@ -357,9 +361,12 @@ class _GerenciadorParametroAquarioState
                             tipoParametro: index,
                             valor: int.tryParse(valorParametro ?? ''),
                           ),
-                        ).then((value) {
+                        )
+                            .then((value) {
                           Navigator.of(context).pop();
-                          setState(() {});
+                          setState(() {
+                            futureList = fetchParametrosAquario();
+                          });
                           showDialog(
                             context: context,
                             builder: (context) => const SuccessDialog(

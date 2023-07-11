@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
 import 'package:nemo_frontend/components/custom/sombra_default.dart';
 import 'package:nemo_frontend/components/dialogs/question_dialog.dart';
@@ -7,6 +8,8 @@ import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';
+import 'package:nemo_frontend/models/parametro/parametro_form.dart';
+import 'package:flutter/services.dart';
 
 class GerenciadorParametroAquario extends StatefulWidget {
   const GerenciadorParametroAquario({Key? key, required this.aquarioDTO})
@@ -81,7 +84,9 @@ class _GerenciadorParametroAquarioState
               IconButton(
                 constraints: const BoxConstraints(),
                 padding: EdgeInsets.zero,
-                onPressed: () {},
+                onPressed: () {
+                  dialogAdicionarParametro();
+                },
                 icon: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -166,8 +171,7 @@ class _GerenciadorParametroAquarioState
                       builder: (context) => const SuccessDialog(
                           message: 'Parâmetro deletado com sucesso.'),
                     );
-                    setState(() {
-                    });
+                    setState(() {});
                   }
                 });
               },
@@ -250,4 +254,145 @@ class _GerenciadorParametroAquarioState
       ],
     );
   }
+
+  void dialogAdicionarParametro() {
+    var listaTipoParametros = TipoParametro.values
+        .map(
+          (e) => DropdownMenuItem(
+            value: e,
+            child: Text(
+              e.name,
+              style: const TextStyle(color: PaletaCores.azul3),
+            ),
+          ),
+        )
+        .toList();
+    final form = GlobalKey<FormState>();
+    String? valorParametro;
+
+    RegExp numbersOnly = RegExp(r'^[0-9]*$');
+    TipoParametro? tipoParametroSelecionado;
+
+    Dialog dialog = Dialog(
+      insetPadding: EdgeInsets.symmetric(
+        horizontal: MediaQuery.of(context).size.width * 0.30,
+      ),
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: MediaQuery.of(context).size.width * 0.03,
+        ),
+        child: Form(
+          key: form,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 30),
+              Container(
+                decoration: const BoxDecoration(
+                  color: PaletaCores.azul2,
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: DropdownButtonFormField(
+                  hint: const Text(
+                    "Selecione um parâmetro",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
+                  ),
+                  icon: const Padding(
+                    padding: EdgeInsets.only(left: 45, right: 10),
+                    child: RotatedBox(
+                      quarterTurns: 1,
+                      child: Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        textDirection: TextDirection.ltr,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  borderRadius: const BorderRadius.all(Radius.circular(15)),
+                  padding: const EdgeInsets.only(left: 14),
+                  items: listaTipoParametros,
+                  onChanged: (valor) {
+                    if (valor != null) {
+                      tipoParametroSelecionado = valor;
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 15),
+              TextFormField(
+                decoration:
+                    const InputDecoration(hintText: 'Valor para o parâmetro'),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    return numbersOnly.hasMatch(newValue.text)
+                        ? newValue
+                        : oldValue;
+                  })
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Digite um valor inicial';
+                  }
+                  return null;
+                },
+                onChanged: (value) => valorParametro = value,
+              ),
+              const SizedBox(height: 15),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PrimaryButton(
+                      onPressed: () async {
+                        int index = TipoParametro.values
+                            .indexOf(tipoParametroSelecionado!);
+
+                        aquarioParametroDAO
+                            .adicionarParametro(
+                          parametroForm: ParametroForm(
+                            idAquario: widget.aquarioDTO.id,
+                            tipoParametro: index,
+                            valor: int.tryParse(valorParametro ?? ''),
+                          ),
+                        ).then((value) {
+                          Navigator.of(context).pop();
+                          setState(() {});
+                          showDialog(
+                            context: context,
+                            builder: (context) => const SuccessDialog(
+                                message: 'Parâmetro cadastrado com sucesso!'),
+                          );
+                        });
+                      },
+                      text: 'Adicionar'),
+                  const SizedBox(width: 10),
+                  PrimaryButton(
+                      onPressed: () => Navigator.pop(context),
+                      text: 'Cancelar'),
+                ],
+              ),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+    showDialog(
+      context: context,
+      builder: (context) => dialog,
+    );
+  }
+}
+
+enum TipoParametro {
+  Ph,
+  Temperatura,
+  Oxigenio,
+  Iluminacao,
+  BombaDagua,
+  FluxoAgua,
+  Nitrato,
 }

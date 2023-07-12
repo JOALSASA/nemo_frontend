@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/custom/aquario_item.dart';
+import 'package:nemo_frontend/components/custom/grafico_aquario.dart';
+import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
+import 'package:nemo_frontend/components/custom/sombra_default.dart';
+import 'package:nemo_frontend/components/utils/PaletaCores.dart';
+import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';
 
 class AquarioView extends StatefulWidget {
   const AquarioView({Key? key, required this.aquarioDTO}) : super(key: key);
@@ -13,6 +19,20 @@ class AquarioView extends StatefulWidget {
 }
 
 class _AquarioViewState extends State<AquarioView> {
+  final AquarioParametroDAO _aquarioParametroDAO = AquarioParametroDAO();
+  Future<List<AquarioParametroDTO>>? futureAquarioParametroDTOs;
+
+  @override
+  void initState() {
+    fetchAquarioParametros();
+    super.initState();
+  }
+
+  void fetchAquarioParametros() {
+    futureAquarioParametroDTOs =
+        _aquarioParametroDAO.listarParametrosAquario(widget.aquarioDTO.id ?? 0);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +41,7 @@ class _AquarioViewState extends State<AquarioView> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 90).copyWith(top: 30),
+          padding: const EdgeInsets.symmetric(horizontal: 90, vertical: 30),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -52,7 +72,29 @@ class _AquarioViewState extends State<AquarioView> {
                 ),
               ),
               const SizedBox(height: 30),
-              // TODO: adicionar os gráficos do aquário com a biblioteca syncfusion
+              ReusableFutureBuilder(
+                  future: futureAquarioParametroDTOs!,
+                  builder: (context, snapshot) {
+                    List<AquarioParametroDTO> aquarioParametroDTOs =
+                        snapshot.data!;
+                    return GridView.builder(
+                        padding: const EdgeInsets.only(left: 176, right: 173),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:
+                              MediaQuery.of(context).size.width ~/ 700,
+                          crossAxisSpacing: 82,
+                          mainAxisSpacing: 56,
+                          childAspectRatio: 250 / 145,
+                        ),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return GraficoAquario(
+                            aquarioParametroDTO: aquarioParametroDTOs[index],
+                          );
+                        });
+                  }),
             ],
           ),
         ),

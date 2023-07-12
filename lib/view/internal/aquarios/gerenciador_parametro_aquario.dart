@@ -10,6 +10,7 @@ import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';
 import 'package:nemo_frontend/models/parametro/parametro_form.dart';
 import 'package:flutter/services.dart';
+import 'package:nemo_frontend/utils/regex.dart';
 
 class GerenciadorParametroAquario extends StatefulWidget {
   const GerenciadorParametroAquario({Key? key, required this.aquarioDTO})
@@ -274,7 +275,6 @@ class _GerenciadorParametroAquarioState
     final form = GlobalKey<FormState>();
     String? valorParametro;
 
-    RegExp numbersOnly = RegExp(r'^[0-9]*$');
     TipoParametro? tipoParametroSelecionado;
 
     Dialog dialog = Dialog(
@@ -332,7 +332,7 @@ class _GerenciadorParametroAquarioState
                 keyboardType: TextInputType.number,
                 inputFormatters: [
                   TextInputFormatter.withFunction((oldValue, newValue) {
-                    return numbersOnly.hasMatch(newValue.text)
+                    return Regex.numbersOnly.hasMatch(newValue.text)
                         ? newValue
                         : oldValue;
                   })

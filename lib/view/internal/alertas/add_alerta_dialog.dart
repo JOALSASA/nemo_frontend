@@ -287,12 +287,11 @@ class _AddAlertaDialogState extends State<AddAlertaDialog> {
                             parametroSelecionado!.id);
                         if(await AlertaDAO().adicionarAlerta(novoAlerta)){
                           _mostrarAlerta(PaletaCores.verde1, Colors.white, 'Alerta adicionado com sucesso!');
-                          Navigator.pop(context);
+                          sairDialog();
                         }else{
                           _mostrarAlerta(PaletaCores.vermelho1, Colors.white, 'Ocorreu  um erro ao adicionar o alerta.');
                         }
                       }
-
                     },
                     backgroundColor: PaletaCores.azul2,
                     text: 'Adicionar',
@@ -305,6 +304,10 @@ class _AddAlertaDialogState extends State<AddAlertaDialog> {
         );
       },
     );
+  }
+
+  sairDialog(){
+    Navigator.pop(context);
   }
 
   _mostrarAlerta(Color color, Color textColor, String texto) {

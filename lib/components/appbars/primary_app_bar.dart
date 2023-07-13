@@ -79,6 +79,7 @@ class PrimaryAppBar extends AppBar {
                     elevation: 8.0,
                   );
                 }),
+            const SizedBox(width: 40),
           ],
         );
 }

@@ -63,7 +63,11 @@ class _GraficoAquarioState extends State<GraficoAquario> {
                   title: ChartTitle(
                       text: '${widget.aquarioParametroDTO.parametroDto?.tipo}'),
                   legend: const Legend(isVisible: true),
-                  primaryXAxis: DateTimeAxis(dateFormat: DateFormat.Hm()),
+                  primaryXAxis: DateTimeAxis(
+                    dateFormat: DateFormat.Hm(),
+                    intervalType: DateTimeIntervalType.hours,
+                    interval: 1,
+                  ),
                   tooltipBehavior: _tooltipBehavior,
                   series: <ChartSeries>[
                     LineSeries(
@@ -150,7 +154,7 @@ class _GraficoAquarioState extends State<GraficoAquario> {
         showDialog(
           context: context,
           builder: (context) =>
-          const SuccessDialog(message: 'Valor cadastrado com sucesso.'),
+              const SuccessDialog(message: 'Valor cadastrado com sucesso.'),
         ).then((value) {
           setState(() {
             fetchHistoricos();

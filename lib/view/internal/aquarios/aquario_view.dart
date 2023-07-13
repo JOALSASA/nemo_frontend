@@ -6,11 +6,13 @@ import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
 import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';
+import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
 
 class AquarioView extends StatefulWidget {
-  const AquarioView({Key? key, required this.aquarioDTO}) : super(key: key);
+  const AquarioView({Key? key, required this.aquarioDTO, required this.usuarioDTO}) : super(key: key);
 
   final AquarioDTO aquarioDTO;
+  final UsuarioDTO usuarioDTO;
 
   @override
   State<AquarioView> createState() => _AquarioViewState();
@@ -54,11 +56,12 @@ class _AquarioViewState extends State<AquarioView> {
                   ),
                 ),
               ),
+              const SizedBox(height: 25),
               Align(
                 alignment: Alignment.centerLeft,
                 child: SizedBox(child: AquarioItem(widget.aquarioDTO)),
               ),
-              const SizedBox(height: 50),
+              const SizedBox(height: 25),
               const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(

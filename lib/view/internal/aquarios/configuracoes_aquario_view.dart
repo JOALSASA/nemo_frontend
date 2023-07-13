@@ -47,7 +47,19 @@ class _ConfiguracoesAquarioViewState extends State<ConfiguracoesAquarioView> {
                   ),
                 ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 5),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Dono aquário: ${widget.aquarioDTO.dono?.nome}',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    height: 1,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
               Align(
                 alignment: Alignment.centerLeft,
                 child: PrimaryButton(
@@ -62,7 +74,8 @@ class _ConfiguracoesAquarioViewState extends State<ConfiguracoesAquarioView> {
                 children: [
                   GerenciadorParametroAquario(aquarioDTO: widget.aquarioDTO),
                   const Spacer(),
-                  GerenciadorUsuariosAutorizados(aquarioDTO: widget.aquarioDTO),
+                  GerenciadorUsuariosAutorizados(
+                      aquarioDTO: widget.aquarioDTO),
                 ],
               ),
             ],

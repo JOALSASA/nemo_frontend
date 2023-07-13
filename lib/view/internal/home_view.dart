@@ -8,6 +8,8 @@ import 'package:nemo_frontend/components/inputs/search_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
+import 'package:nemo_frontend/utils/local_storage.dart';
 import 'package:nemo_frontend/view/internal/aquarios/aquario_view.dart';
 
 class HomeView extends StatefulWidget {
@@ -22,12 +24,12 @@ class _HomeViewState extends State<HomeView> {
   final TextEditingController searchBarController = TextEditingController();
 
   Future<List<AquarioDTO>>? _listaAquarios;
+  UsuarioDTO? usuarioAutenticado;
 
   @override
   void initState() {
     super.initState();
-    _listaAquarios = _aquarioDAO.listarAquariosUsuario();
-
+    _fetchAquarios();
     searchBarController.addListener(() {
       if (searchBarController.text.isEmpty) {
         setState(() {
@@ -35,6 +37,11 @@ class _HomeViewState extends State<HomeView> {
         });
       }
     });
+  }
+
+  void _fetchAquarios() async  {
+    _listaAquarios = _aquarioDAO.listarAquariosUsuario();
+    usuarioAutenticado = await LocalStorage.carregarUsuario();
   }
 
   @override
@@ -112,11 +119,12 @@ class _HomeViewState extends State<HomeView> {
                     itemBuilder: (context, index) => Align(
                       child: AquarioItem(
                         listaAquarios[index],
+
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) =>
-                                  AquarioView(aquarioDTO: listaAquarios[index]),
+                                  AquarioView(aquarioDTO: listaAquarios[index], usuarioDTO: usuarioAutenticado!),
                             ),
                           );
                         },

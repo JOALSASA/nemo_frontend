@@ -87,6 +87,13 @@ class AquarioItem extends StatelessWidget {
                 ],
               ),
               Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Dono: ${aquario.dono?.nome}',
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ),
+              Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => Navigator.of(context).pushReplacement(

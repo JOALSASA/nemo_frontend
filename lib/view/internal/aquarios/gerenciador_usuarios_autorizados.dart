@@ -9,6 +9,7 @@ import 'package:nemo_frontend/dao/aquario_dao.dart';
 import 'package:nemo_frontend/models/api_erro_dto.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 import 'package:nemo_frontend/models/usuario/usuario_dto.dart';
+import 'package:nemo_frontend/utils/local_storage.dart';
 
 class GerenciadorUsuariosAutorizados extends StatefulWidget {
   const GerenciadorUsuariosAutorizados({required this.aquarioDTO, Key? key})
@@ -25,9 +26,11 @@ class _GerenciadorUsuariosAutorizadosState
     extends State<GerenciadorUsuariosAutorizados> {
   final AquarioDAO _aquarioDAO = AquarioDAO();
   Future<List<UsuarioDTO>>? _futureListUsuario;
+  bool visible = false;
 
   @override
   void initState() {
+    _loadUsuario();
     _futureListUsuario =
         _aquarioDAO.listarUsuariosPermissaoAquario(widget.aquarioDTO.id ?? 0);
     super.initState();
@@ -40,58 +43,72 @@ class _GerenciadorUsuariosAutorizadosState
     });
   }
 
+  void _loadUsuario() async {
+    UsuarioDTO? usuarioDTO = await LocalStorage.carregarUsuario();
+    if (usuarioDTO != null &&
+        widget.aquarioDTO.dono != null &&
+        usuarioDTO.id == widget.aquarioDTO.dono!.id) {
+      setState(() {
+        visible = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 580, minWidth: 400),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'Usuários autorizados',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 24,
+    return Visibility(
+      visible: visible,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 580, minWidth: 400),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Usuários autorizados',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 0.50),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Flexible(child: Row()),
-                ReusableFutureBuilder(
-                  future: _futureListUsuario!,
-                  builder: (context, snapshot) {
-                    List<UsuarioDTO> usuariosAutorizados = snapshot.data!;
-                    return ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: usuariosAutorizados.length,
-                      itemBuilder: (context, index) =>
-                          usuariosAutorizadosItem(usuariosAutorizados[index]),
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                PrimaryButton(
-                  onPressed: () {},
-                  backgroundColor: PaletaCores.azul2,
-                  text: 'Adicionar usuário',
-                  fontSize: 16,
-                ),
-              ],
-            ),
-          )
-        ],
+            const SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 0.50),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Flexible(child: Row()),
+                  ReusableFutureBuilder(
+                    future: _futureListUsuario!,
+                    builder: (context, snapshot) {
+                      List<UsuarioDTO> usuariosAutorizados = snapshot.data!;
+                      return ListView.builder(
+                        shrinkWrap: true,
+                        itemCount: usuariosAutorizados.length,
+                        itemBuilder: (context, index) =>
+                            usuariosAutorizadosItem(usuariosAutorizados[index]),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20),
+                  PrimaryButton(
+                    onPressed: () {},
+                    backgroundColor: PaletaCores.azul2,
+                    text: 'Adicionar usuário',
+                    fontSize: 16,
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

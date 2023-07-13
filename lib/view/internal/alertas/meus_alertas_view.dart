@@ -2,6 +2,8 @@ import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
+import 'package:nemo_frontend/components/dialogs/fail_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/loading_dialog.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/alerta_dao.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
@@ -47,16 +49,16 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
     itemSelections = List.generate(alertasList!.length, (index) => false);
   }
 
-  _getParametrosAquario(int idAquario) async{
+  _getParametrosAquario(int idAquario) async {
     parametros = AquarioParametroDAO().listarParametrosAquario(idAquario);
   }
 
-  _initListExcluirTamanho(bool isExcluir ,AlertaDTO alerta){
-    if(isExcluir){
+  excluirAlertasList(bool isExcluir, AlertaDTO alerta) {
+    if (isExcluir) {
       setState(() {
         listExcluir.add(alerta.id!);
       });
-    }else{
+    } else {
       listExcluir.remove(alerta.id!);
     }
   }
@@ -86,9 +88,7 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  dropdownAquario(aquarios),
-                  funcoesPaginasAlerta()],
+                children: [dropdownAquario(aquarios), funcoesPaginasAlerta()],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 50),
@@ -97,12 +97,10 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                     setState(() {
                       showDialog(
                           context: context,
-                          builder: (BuildContext context){
+                          builder: (BuildContext context) {
                             return AddAlertaDialog();
-                      });
-
-                    }
-                    );
+                          });
+                    });
                   },
                   backgroundColor: PaletaCores.azul2,
                   text: 'Adicionar Alerta',
@@ -113,18 +111,24 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                   future: alertas,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
+                      return const LoadingDialog();
+                    }
+                    if (snapshot.data == null) {
+                      return const FailDialog(
+                          message:
+                              'Ocorreu um erro ao carregar os dados. Tente novamente em alguns instantes.');
                     } else {
                       return Column(
                         children: [
                           GridView.builder(
-                              padding: const EdgeInsets.only(left: 176, right: 173),
+                              padding:
+                                  const EdgeInsets.only(left: 176, right: 173),
                               scrollDirection: Axis.vertical,
                               shrinkWrap: true,
                               gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
+                                  SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount:
-                                MediaQuery.of(context).size.width ~/ 700,
+                                    MediaQuery.of(context).size.width ~/ 700,
                                 crossAxisSpacing: 82,
                                 mainAxisSpacing: 56,
                                 childAspectRatio: 480 / 107,
@@ -138,7 +142,8 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                                         onChanged: (bool? value) {
                                           setState(() {
                                             itemSelections[index] = value!;
-                                            _initListExcluirTamanho(value, snapshot.data![index]);
+                                            excluirAlertasList(
+                                                value, snapshot.data![index]);
                                           });
                                         }),
                                     Expanded(
@@ -146,8 +151,9 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 25, vertical: 10),
                                         decoration: BoxDecoration(
-                                            borderRadius: const BorderRadius.all(
-                                                Radius.circular(20)),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(20)),
                                             color: PaletaCores.cinza2,
                                             boxShadow: [
                                               BoxShadow(
@@ -158,41 +164,113 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                                             ]),
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Row(
                                               children: [
                                                 Text(
                                                   snapshot.data![index].nome!,
-                                                  style:
-                                                  const TextStyle(fontSize: 25),
+                                                  style: const TextStyle(
+                                                      fontSize: 25),
                                                 ),
                                                 const SizedBox(width: 21.9),
                                                 const Text(
                                                   'Estado:',
-                                                  style: TextStyle(fontSize: 20),
+                                                  style:
+                                                      TextStyle(fontSize: 20),
                                                 ),
                                                 const SizedBox(width: 4.98),
                                                 estadoAlerta(snapshot
-                                                    .data![index].estadoAlerta!),
+                                                    .data![index]
+                                                    .estadoAlerta!),
                                               ],
                                             ),
-                                            Container(
-                                              padding:
-                                              const EdgeInsets.only(left: 16),
-                                              child: Text(
-                                                snapshot.data![index].nomeAquario!,
-                                                style:
-                                                const TextStyle(fontSize: 20),
-                                              ),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 16),
+                                                  child: Text(
+                                                    snapshot.data![index]
+                                                        .nomeAquario!,
+                                                    style: const TextStyle(
+                                                        fontSize: 20),
+                                                  ),
+                                                ),
+                                                Spacer(),
+                                                Row(
+                                                  children: [
+                                                    Container(
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .black)),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                          MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              '${snapshot.data![index].min}',
+                                                              style:
+                                                              const TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                            const Text(
+                                                              'min',
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )),
+                                                    const SizedBox(width: 30),
+                                                    Container(
+                                                        decoration: BoxDecoration(
+                                                            border: Border.all(
+                                                                color: Colors
+                                                                    .black)),
+                                                        child: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Text(
+                                                              '${snapshot.data![index].max}',
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                            const Text(
+                                                              'max',
+                                                              style: TextStyle(
+                                                                fontSize: 18,
+                                                                color: Colors
+                                                                    .black,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )),
+                                                  ],
+                                                )
+                                              ],
                                             ),
-                                            Container(
-                                              padding:
-                                              const EdgeInsets.only(left: 16),
-                                              child: Text(
-                                                'Parâmetro: ${snapshot.data![index].tipoParametro!}',
-                                                style:
-                                                const TextStyle(fontSize: 20),
+                                            Expanded(
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 16),
+                                                child: Text(
+                                                  'Parâmetro: ${snapshot.data![index].tipoParametro!}',
+                                                  style: const TextStyle(
+                                                      fontSize: 20),
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -204,8 +282,6 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                               })
                         ],
                       );
-
-
                     }
                   }),
             ],
@@ -304,7 +380,7 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
         ),
         PrimaryButton(
           onPressed: () async {
-            if(await AlertaDAO().excluirAlerta(listExcluir)){
+            if (await AlertaDAO().excluirAlerta(listExcluir)) {
               setState(() {
                 _getAllAlertas();
               });

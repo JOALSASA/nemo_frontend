@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/view/external/boas_vindas_view.dart';
-import 'package:nemo_frontend/view/internal/alertas/meus_alertas_view.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,3 +27,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

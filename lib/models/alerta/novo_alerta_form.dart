@@ -22,4 +22,7 @@ class NovoAlertaForm {
 
     return data;
   }
+
+  NovoAlertaForm(
+      this.nome, this.min, this.max, this.aquarioId, this.aquarioParametroId);
 }

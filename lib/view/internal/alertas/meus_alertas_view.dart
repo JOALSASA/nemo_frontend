@@ -1,10 +1,15 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/alerta_dao.dart';
 import 'package:nemo_frontend/dao/aquario_dao.dart';
+import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/alerta/alerta_dto.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
+import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';
+import 'package:nemo_frontend/view/internal/alertas/add_alerta_dialog.dart';
 
 import '../../../components/buttons/primary_button.dart';
 import 'historico_alertas_view.dart';
@@ -19,24 +24,41 @@ class MeusAlertasView extends StatefulWidget {
 class _MeusAlertasViewState extends State<MeusAlertasView> {
   late Future<List<AquarioDTO>> aquarios;
   Future<List<AlertaDTO>>? alertas;
+  Future<List<AquarioParametroDTO>>? parametros;
+  List<int> listExcluir = [];
   AquarioDTO? aquarioSelecionado;
+  AquarioParametroDTO? paramSelecionado;
 
-  _getAquarios()  {
+  _getAquarios() {
     aquarios = AquarioDAO().listarAquariosUsuario();
   }
 
-  _getAllAlertas(){
+  _getAllAlertas() {
     alertas = AlertaDAO().listarTodosOsAlertas();
     _getAlertas();
   }
 
-  _getAlertasAquario(int idAquario){
+  _getAlertasAquario(int idAquario) {
     alertas = AlertaDAO().listarAlertasDoAquario(idAquario);
   }
 
   _getAlertas() async {
     List<AlertaDTO>? alertasList = await alertas;
     itemSelections = List.generate(alertasList!.length, (index) => false);
+  }
+
+  _getParametrosAquario(int idAquario) async{
+    parametros = AquarioParametroDAO().listarParametrosAquario(idAquario);
+  }
+
+  _initListExcluirTamanho(bool isExcluir ,AlertaDTO alerta){
+    if(isExcluir){
+      setState(() {
+        listExcluir.add(alerta.id!);
+      });
+    }else{
+      listExcluir.remove(alerta.id!);
+    }
   }
 
   late List<bool> itemSelections;
@@ -66,14 +88,21 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   dropdownAquario(aquarios),
-                  funcoesPaginasAlerta()
-                ],
+                  funcoesPaginasAlerta()],
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 50),
                 child: PrimaryButton(
                   onPressed: () {
-                    showDialogAddAlerta();
+                    setState(() {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context){
+                            return AddAlertaDialog();
+                      });
+
+                    }
+                    );
                   },
                   backgroundColor: PaletaCores.azul2,
                   text: 'Adicionar Alerta',
@@ -85,86 +114,100 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const CircularProgressIndicator();
-                    } else{
-                      return GridView.builder(
-                          padding:
-                          const EdgeInsets.only(left: 176, right: 173),
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: MediaQuery.of(context).size.width ~/ 700,
-                            crossAxisSpacing: 82,
-                            mainAxisSpacing: 56,
-                            childAspectRatio: 480 / 107,
-                          ),
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            return Row(
-                              children: [
-                                Checkbox(
-                                    value: itemSelections[index],
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        itemSelections[index] = value!;
-                                        print(itemSelections[index]);
-                                      });
-                                    }),
-                                Expanded(
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 25, vertical: 10),
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                        const BorderRadius.all(Radius.circular(20)),
-                                        color: PaletaCores.cinza2,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: Colors.black.withOpacity(0.25),
-                                              offset: const Offset(4, 4),
-                                              blurRadius: 5)
-                                        ]),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+                    } else {
+                      return Column(
+                        children: [
+                          GridView.builder(
+                              padding: const EdgeInsets.only(left: 176, right: 173),
+                              scrollDirection: Axis.vertical,
+                              shrinkWrap: true,
+                              gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount:
+                                MediaQuery.of(context).size.width ~/ 700,
+                                crossAxisSpacing: 82,
+                                mainAxisSpacing: 56,
+                                childAspectRatio: 480 / 107,
+                              ),
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Row(
+                                  children: [
+                                    Checkbox(
+                                        value: itemSelections[index],
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            itemSelections[index] = value!;
+                                            _initListExcluirTamanho(value, snapshot.data![index]);
+                                          });
+                                        }),
+                                    Expanded(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 25, vertical: 10),
+                                        decoration: BoxDecoration(
+                                            borderRadius: const BorderRadius.all(
+                                                Radius.circular(20)),
+                                            color: PaletaCores.cinza2,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                  color: Colors.black
+                                                      .withOpacity(0.25),
+                                                  offset: const Offset(4, 4),
+                                                  blurRadius: 5)
+                                            ]),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              snapshot.data![index].nome!,
-                                              style: const TextStyle(fontSize: 20),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  snapshot.data![index].nome!,
+                                                  style:
+                                                  const TextStyle(fontSize: 25),
+                                                ),
+                                                const SizedBox(width: 21.9),
+                                                const Text(
+                                                  'Estado:',
+                                                  style: TextStyle(fontSize: 20),
+                                                ),
+                                                const SizedBox(width: 4.98),
+                                                estadoAlerta(snapshot
+                                                    .data![index].estadoAlerta!),
+                                              ],
                                             ),
-                                            const SizedBox(width: 21.9),
-                                            const Text(
-                                              'Estado:',
-                                              style: TextStyle(fontSize: 16),
+                                            Container(
+                                              padding:
+                                              const EdgeInsets.only(left: 16),
+                                              child: Text(
+                                                snapshot.data![index].nomeAquario!,
+                                                style:
+                                                const TextStyle(fontSize: 20),
+                                              ),
                                             ),
-                                            const SizedBox(width: 4.98),
-                                            estadoAlerta(snapshot.data![index].estadoAlerta!),
+                                            Container(
+                                              padding:
+                                              const EdgeInsets.only(left: 16),
+                                              child: Text(
+                                                'Parâmetro: ${snapshot.data![index].tipoParametro!}',
+                                                style:
+                                                const TextStyle(fontSize: 20),
+                                              ),
+                                            ),
                                           ],
                                         ),
-                                        Container(
-                                          padding: const EdgeInsets.only(left: 16),
-                                          child: Text(
-                                            'Nome do Aquário: ${snapshot.data![index].nomeAquario!}',
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.only(left: 16),
-                                          child: Text(
-                                            'Parâmetro: ${snapshot.data![index].tipoParametro!}' ,
-                                            style: const TextStyle(fontSize: 15),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          });
+                                  ],
+                                );
+                              })
+                        ],
+                      );
+
+
                     }
-                  }
-              ),
+                  }),
             ],
           ),
         ),
@@ -177,9 +220,8 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
         future: listaAquarios,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Exibir um indicador de progresso enquanto a lista está sendo carregada
             return const CircularProgressIndicator();
-          } else{
+          } else {
             return Container(
               height: 39,
               width: 274,
@@ -223,7 +265,8 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                 padding: const EdgeInsets.only(left: 14),
                 underline: const SizedBox(),
                 value: aquarioSelecionado,
-                items: snapshot.data!.map<DropdownMenuItem<AquarioDTO>>((AquarioDTO aquario) {
+                items: snapshot.data!
+                    .map<DropdownMenuItem<AquarioDTO>>((AquarioDTO aquario) {
                   return DropdownMenuItem<AquarioDTO>(
                     value: aquario,
                     child: Text(aquario.nome!),
@@ -233,15 +276,14 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
                   setState(() {
                     aquarioSelecionado = newValue;
                     _getAlertasAquario(aquarioSelecionado!.id!);
+                    _getParametrosAquario(aquarioSelecionado!.id!);
                   });
                 },
               ),
             );
           }
-        }
-    );
+        });
   }
-
 
   funcoesPaginasAlerta() {
     return Row(
@@ -261,7 +303,13 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
           width: 11,
         ),
         PrimaryButton(
-          onPressed: () {},
+          onPressed: () async {
+            if(await AlertaDAO().excluirAlerta(listExcluir)){
+              setState(() {
+                _getAllAlertas();
+              });
+            }
+          },
           backgroundColor: PaletaCores.azul2,
           text: 'Excluir',
           fontSize: 16,
@@ -411,96 +459,5 @@ class _MeusAlertasViewState extends State<MeusAlertasView> {
         ],
       );
     }
-  }
-
-  showDialogAddAlerta(){
-    return showDialog(
-        context: context,
-        builder: (_) => Dialog(
-          elevation: 50,
-          shadowColor:
-          const Color(0xff13426A),
-          surfaceTintColor:
-          const Color(0xffE7E7E7),
-          child: Container(
-            height: 271,
-            width: 575,
-            padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 26),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      alignment: Alignment.center,
-                      child: const Text("Adicionar Alerta",
-                        style: TextStyle(
-                          fontSize: 24
-                        ),
-                      ),
-                    ),
-                    dropdownAquario(aquarios)
-                  ],
-                ),
-                const SizedBox(
-                  width: 250,
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: "Digite o nome do alerta"
-                    ),
-                  ),
-                ),
-                const Row(
-                  children: [
-                    SizedBox(
-                      width: 250,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "Digite o parâmetro"
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 25,),
-                    SizedBox(
-                      width: 50,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "min"
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 25,),
-                    SizedBox(
-                      width: 50,
-                      child: TextField(
-                        decoration: InputDecoration(
-                            hintText: "max"
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  child: PrimaryButton(
-                    onPressed: () {
-                      /*
-                      * TODO
-                      *  adicionar alerta
-                      * */
-                      Navigator.pop(context);
-                    },
-                    backgroundColor: PaletaCores.azul2,
-                    text: 'Adicionar',
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
-    );
   }
 }

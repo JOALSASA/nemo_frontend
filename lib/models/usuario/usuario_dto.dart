@@ -9,7 +9,7 @@ class UsuarioDTO {
 
   UsuarioDTO.fromJson(Map<String, dynamic> json) {
     id = json['id'];
-    nome = json['nome'];
+    nome = json['nomeUsuario'];
     email = json['email'];
     role = json['role'];
     token = json['token'];

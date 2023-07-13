@@ -3,8 +3,6 @@ import 'package:nemo_frontend/components/appbars/primary_app_bar.dart';
 import 'package:nemo_frontend/components/custom/aquario_item.dart';
 import 'package:nemo_frontend/components/custom/grafico_aquario.dart';
 import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
-import 'package:nemo_frontend/components/custom/sombra_default.dart';
-import 'package:nemo_frontend/components/utils/PaletaCores.dart';
 import 'package:nemo_frontend/dao/aquario_parametro_dao.dart';
 import 'package:nemo_frontend/models/aquario/aquario_dto.dart';
 import 'package:nemo_frontend/models/parametro/aquario_parametro_dto.dart';

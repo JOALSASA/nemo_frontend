@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nemo_frontend/components/buttons/primary_button.dart';
 import 'package:nemo_frontend/components/custom/reusable_future_builder.dart';
 import 'package:nemo_frontend/components/dialogs/fail_dialog.dart';
+import 'package:nemo_frontend/components/dialogs/partilhar_aquario_dialog.dart';
 import 'package:nemo_frontend/components/dialogs/question_dialog.dart';
 import 'package:nemo_frontend/components/dialogs/success_dialog.dart';
 import 'package:nemo_frontend/components/utils/PaletaCores.dart';
@@ -93,13 +94,23 @@ class _GerenciadorUsuariosAutorizadosState
                         shrinkWrap: true,
                         itemCount: usuariosAutorizados.length,
                         itemBuilder: (context, index) =>
-                            usuariosAutorizadosItem(usuariosAutorizados[index]),
+                            usuarioAutorizadoItem(usuariosAutorizados[index]),
                       );
                     },
                   ),
                   const SizedBox(height: 20),
                   PrimaryButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) => PartilharAquarioDialog(
+                            idAquario: widget.aquarioDTO.id ?? 0),
+                      ).then((value) {
+                        setState(() {
+                          _fetchUsuariosPermisoes();
+                        });
+                      });
+                    },
                     backgroundColor: PaletaCores.azul2,
                     text: 'Adicionar usuário',
                     fontSize: 16,
@@ -113,7 +124,7 @@ class _GerenciadorUsuariosAutorizadosState
     );
   }
 
-  Widget usuariosAutorizadosItem(UsuarioDTO usuarioDTO) {
+  Widget usuarioAutorizadoItem(UsuarioDTO usuarioDTO) {
     return Container(
       height: 50,
       decoration: const BoxDecoration(

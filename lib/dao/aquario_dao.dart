@@ -67,8 +67,7 @@ class AquarioDAO extends BaseDAO {
     return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
   }
 
-  Future<List<UsuarioDTO>> listarUsuariosPermissaoAquario(
-      int idAquario) async {
+  Future<List<UsuarioDTO>> listarUsuariosPermissaoAquario(int idAquario) async {
     var url = getCompleteUrl(path: '$_basePath/$idAquario/usuarios');
 
     var response = await get(url);
@@ -88,6 +87,20 @@ class AquarioDAO extends BaseDAO {
     var url = getCompleteUrl(path: '$_basePath/$idAquario/usuario/$idUsuario');
 
     var response = await delete(url);
+    var bodyBytes = response.bodyBytes;
+    var decode = utf8.decode(bodyBytes);
+
+    if (response.statusCode == 204) {
+      return;
+    }
+
+    return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
+  }
+
+  Future partilharAquario(int idAquario, int idUsuario) async {
+    var url = getCompleteUrl(path: '$_basePath/$idAquario/usuario/$idUsuario');
+
+    var response = await post(url);
     var bodyBytes = response.bodyBytes;
     var decode = utf8.decode(bodyBytes);
 

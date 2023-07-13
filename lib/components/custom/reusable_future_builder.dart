@@ -6,12 +6,14 @@ class ReusableFutureBuilder<T> extends StatelessWidget {
     Key? key,
     required this.future,
     required this.builder,
+    this.textColor,
     this.loadingWidget,
     this.errorWidget,
   }) : super(key: key);
 
   final Future<List<T>> future;
   final AsyncWidgetBuilder<List<T>> builder;
+  final Color? textColor;
   final Widget? loadingWidget;
   final Widget? errorWidget;
 
@@ -34,9 +36,9 @@ class ReusableFutureBuilder<T> extends StatelessWidget {
           return errorWidget ?? Text('Error: ${snapshot.error}');
         }
         if (snapshot.data!.isEmpty) {
-          return const Text(
+          return Text(
             'Não encontramos nenhum item',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16, color: textColor),
           );
         }
 

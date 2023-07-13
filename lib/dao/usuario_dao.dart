@@ -54,4 +54,22 @@ class UsuarioDAO extends BaseDAO {
       rethrow;
     }
   }
+
+  Future<List<UsuarioDTO>> consultarUsuarioPorNome(String nomeUsuario) async {
+    var url = getCompleteUrl(path: '$_basePath/consultar', queryParameters: {
+      'nome': nomeUsuario,
+    });
+
+    var response = await get(url);
+    var bodyBytes = response.bodyBytes;
+    var decode = utf8.decode(bodyBytes);
+
+    if (response.statusCode == 200) {
+      return List<UsuarioDTO>.from(jsonDecode(decode).map(
+        (x) => UsuarioDTO.fromJson(x),
+      ));
+    }
+
+    return Future.error(ApiErroDTO.fromJson(jsonDecode(decode)));
+  }
 }
